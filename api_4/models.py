@@ -75,14 +75,19 @@ class User(AbstractBaseUser):
       # Simplest possible answer: All admins are staff
       return self.is_admin
 
-
-
-
-
 class Employee(models.Model):
     name = models.CharField(max_length=50)
     profile = models.CharField(max_length=50)
     salary = models.IntegerField()
+    email = models.EmailField(
+      verbose_name='Email',
+      max_length=255,
+      unique=True,
+    )
+    password = models.CharField(max_length=50)
+
+    def check_password(self, raw_password):
+        return self.password == raw_password
 
 
 class Category(models.Model):

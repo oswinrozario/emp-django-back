@@ -112,6 +112,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
+        extra_kwargs = {'email': {'write_only': True}, 'password': {'write_only': True}}
+
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        exclude = ['email', 'password']
 
 
 class CategorySerializer(serializers.ModelSerializer):

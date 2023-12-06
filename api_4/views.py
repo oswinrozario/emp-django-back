@@ -1,5 +1,5 @@
 from .models import Employee
-from .serializers import EmployeeSerializer
+from .serializers import EmployeeSerializer, EmployeeUpdateSerializer
 from .models import Category
 from .serializers import CategorySerializer
 from rest_framework import viewsets
@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate
 from api_4.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -86,8 +88,38 @@ class UserPasswordResetView(APIView):
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+    queryset = Employee.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == 'update':
+            return EmployeeUpdateSerializer
+        return EmployeeSerializer
+    
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def employee_login_view(request):
+    email = request.data.get('email', '')
+    password = request.data.get('password', '')
+
+    if not email or not password:
+        return Response({'message': 'Email and password are required fields'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        employee = Employee.objects.get(email=email)
+        if employee.check_password(password):
+            # Generate JWT token with custom payload
+            refresh = RefreshToken()
+            refresh['employee_id'] = employee.id
+            access_token = str(refresh.access_token)
+
+            serializer = EmployeeSerializer(employee)
+            return Response({'message': 'Login successful', 'employee': serializer.data, 'token': access_token})
+        else:
+            return Response({'message': 'Invalid login credentials'})
+    except Employee.DoesNotExist:
+        return Response({'message': 'Invalid login credentials'})
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

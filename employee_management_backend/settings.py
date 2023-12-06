@@ -26,8 +26,6 @@ SECRET_KEY = 'django-insecure-x6fdii-_jf0kc-*6!9)^f-xd-4@pab)&+^j62#%aynqdr3i1a(
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,11 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',   
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_ALLOW_ALL: True
